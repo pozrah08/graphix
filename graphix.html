@@ -10,132 +10,84 @@
 <body>
     <script src="js/three.js"></script>
     <script>
-        var scene = new THREE.Scene();
-        var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        //var cHelp = new THREE.CameraHelper(camera);
-        //scene.add(cHelp);
-        var spotLight = new THREE.SpotLight( 0xffffff);
-        spotLight.position.set( 5, 15, 1 );
-        spotLight.rotation.x = 0.05;
-        spotLight.angle = 0.5; 
-        scene.add( spotLight );
+        var scene = new THREE.Scene(); 
+        scene.background = new THREE.Color(0x6fdbf5);
+        
+        var camera = new THREE.PerspectiveCamera(90,  window.innerWidth / window.innerHeight, 0.1, 1000);
+        var renderer = new THREE.WebGLRenderer();
+        var player = { 
+            height:1.8, //camera y
+            speed:0.2,  //movement speed
+            turnSpeed:Math.PI*0.02 //turning speed
+        };
 
-        var lHelp = new THREE.SpotLightHelper(spotLight);
-        scene.add(lHelp);
+        function init(){
+            makeFloor();
+            makeTestCube();
+            camera.position.set(0, player.height, -5);
+            camera.lookAt(new THREE.Vector3(0,player.height,0));
 
+            renderer.setSize( window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.domElement);
 
-        var renderer = new THREE.WebGLRenderer(); 
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        document.body.appendChild(renderer.domElement);
-        var scale = 1;
-        var rotSpd = 0.1;
-        var spd = 0.1;
-        var input = {left:0,right:0, up: 0, down: 0};
-        var room = [
-          [1, 0, 1, 1, 1],
-          [1, 0, 0, 0, 1],
-          [1, 0, 0, 0, 1],
-          [1, 0, 0, 0, 1],
-          [1, 1, 1, 1, 1]
-        ];
-
-        function init() {
-          createLevel(room);
-          render();
-          camera.position.y = 0;
-          camera.position.z = 0;
-
+            animate();
+        }
+        
+        function makeFloor(){
+            var floorGeometry =  new THREE.PlaneGeometry(150,150,10);
+            var material =  new THREE.MeshBasicMaterial({
+                            color:0xf3f5bb
+            });
+            var floor = new THREE.Mesh(floorGeometry, material);
+            
+            floor.rotation.x -= Math.PI / 2; // Rotate the floor
+            scene.add(floor);
+        }
+        
+        function makeTestCube(){
+            var cubeGeometry =  new THREE.BoxGeometry(1,1,1);
+            var material =  new THREE.MeshBasicMaterial({
+                            color:0xffffff
+            });
+            var cube = new THREE.Mesh(cubeGeometry, material);
+            
+            scene.add(cube); 
         }
 
-        function render() {
-          renderer.render(scene, camera);
-          movePlayer();
+        function animate(){
+            requestAnimationFrame(animate);
 
-          requestAnimationFrame(render);
-        } 
-
-        function createLevel(lvl) {
-          for (var i = 0; i < lvl.length; i++) {
-            for (var j = 0; j < lvl[i].length; j++) {
-              if (lvl[i][j] === 1) {
-                createWall(i, 0, j);
-              }
+            // Keyboard movement inputs
+            if(keyboard[87]){ // W
+                camera.position.x -= Math.sin(camera.rotation.y) * player.speed;
+                camera.position.z -= -Math.cos(camera.rotation.y) * player.speed;
             }
-          }
+            if(keyboard[83]){ // S
+                camera.position.x += Math.sin(camera.rotation.y) * player.speed;
+                camera.position.z += -Math.cos(camera.rotation.y) * player.speed;
+            }
+            if(keyboard[65]){ // A
+                camera.rotation.y -= player.turnSpeed;
+            }
+            if(keyboard[68]){ // D
+                camera.rotation.y += player.turnSpeed;
+            }
+
+            renderer.render(scene, camera);
         }
 
-
-
-        function createWall(x, y, z) {
-          var geometry = new THREE.BoxGeometry(scale, scale, scale);
-          var material = new THREE.MeshNormalMaterial({
-            color: 0x000ff0, roughness: 0
-          });
-          var cube = new THREE.Mesh(geometry, material);
-          cube.position.x = x;
-          cube.position.y = y; 
-          cube.position.z = z;
-          scene.add(cube);
+        var keyboard = {};
+        
+        function keyDown(event){
+            keyboard[event.keyCode] = true;
         }
 
-
-
-        function movePlayer(){
-          if(input.right == 1){
-            camera.rotation.y -= rotSpd;
-          }
-          if(input.left == 1){
-            camera.rotation.y += rotSpd; 
-          }
-
-           if(input.up == 1){
-            camera.position.z -= Math.cos(camera.rotation.y) * spd;
-             camera.position.x -= Math.sin(camera.rotation.y) * spd;
-          }
-          if(input.down == 1){
-            camera.position.z += Math.cos(camera.rotation.y) * spd;
-             camera.position.x += Math.sin(camera.rotation.y) * spd;
-          }
+        function keyUp(event){
+            keyboard[event.keyCode] = false;
         }
 
-
-
-
-         window.addEventListener('keydown', function(e) {
-          switch (e.keyCode) {
-            case 68:
-              input.right = 1;
-              break;
-            case 65:
-              input.left = 1; 
-              break;
-            case 87:
-              input.up = 1;
-              break;
-            case 83:
-              input.down = 1;
-              break;
-          }
-        });
-
-
-
-        window.addEventListener('keyup', function(e) {
-          switch (e.keyCode) {
-            case 68:
-              input.right = 0;
-              break;
-            case 65:
-              input.left = 0;
-              break;
-              case 87:
-              input.up = 0;
-              break;
-            case 83:
-              input.down = 0;
-              break; 
-          }
-        });
+        window.addEventListener('keydown', keyDown);
+        window.addEventListener('keyup', keyUp);
 
         init();
     </script>
