@@ -24,6 +24,7 @@
         function init(){
             makeFloor();
             makeRoad();
+            makePatrickHouse();
             camera.position.set(0, player.height, -5);
             camera.lookAt(new THREE.Vector3(0,player.height,0));
 
@@ -52,8 +53,33 @@
             var road = new THREE.Mesh(roadGeometry, material);
             
             road.rotation.x -= Math.PI / 2; // Rotate the floor
-            road.position.y += 0.1;
+            road.position.y += 0.03;
             scene.add(road);
+        }
+        
+        function makePatrickHouse(){
+            var sphereGeometry = new THREE.SphereGeometry(5, 32, 32);
+            var material =  new THREE.MeshBasicMaterial({
+                            color:0x4b010f
+            });
+            var patrickHouse = new THREE.Mesh(sphereGeometry, material);
+            patrickHouse.position.x = 15;
+            patrickHouse.position.z = 20;
+            patrickHouse.position.y = 0;
+            scene.add(patrickHouse);
+            
+            var pathGeometry = new THREE.PlaneGeometry(5, 18, 10);
+            var material =  new THREE.MeshBasicMaterial({
+                            color:0x4d4d4d
+            });
+            var path = new THREE.Mesh(pathGeometry, material);
+            
+            path.rotation.x -= Math.PI / 2; // Rotate the floor
+            
+            path.position.x = 15;
+            path.position.z = 10;
+            path.position.y += 0.03;
+            scene.add(path);
         }
 
         function animate(){
