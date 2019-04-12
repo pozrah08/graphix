@@ -14,7 +14,10 @@
         scene.background = new THREE.Color(0x009eb2);
         
         var camera = new THREE.PerspectiveCamera(90,  window.innerWidth / window.innerHeight, 0.1, 1000);
-        var renderer = new THREE.WebGLRenderer();
+        var renderer = new THREE.WebGLRenderer({
+            antialias:true
+        });
+        
         var player = { 
             height:1.8, //camera y
             speed:0.2,  //movement speed
@@ -32,19 +35,17 @@
             camera.lookAt(new THREE.Vector3(0,player.height,0));
 
             renderer.setSize( window.innerWidth, window.innerHeight);
-            renderer.shadowMap.enabled = true;
-            renderer.shadowMap.type = THREE.BasicShadowMap;
             document.body.appendChild(renderer.domElement);
 
             animate();
         }
         
         function makeLight(){
+            var ambientLight = new THREE.AmbientLight(0xffffff, 1);
+            scene.add(ambientLight);
+            
             var pointLight = new THREE.PointLight(0xffffff, 3);
-            pointLight.position.set(50, 50, 30);
-            pointLight.castShadow = true;
-            pointLight.shadow.camera.near = 1;
-            pointLight.shadow.camera.far = 30;
+            pointLight.position.set(25, 50, 30);
             scene.add(pointLight);
             
             var sphereSize = 6;
@@ -53,9 +54,10 @@
         }
         
         function makeFloor(){
-            var floorGeometry =  new THREE.PlaneGeometry(500,500,10);
+            var floorGeometry =  new THREE.PlaneGeometry(500,500,64);
             var material =  new THREE.MeshPhongMaterial({
-                            color:0x676948
+                            color:0x494b2d,
+                            shininess: 0
             });
             var floor = new THREE.Mesh(floorGeometry, material);
             
@@ -66,7 +68,8 @@
         function makeRoad(){
             var roadGeometry = new THREE.PlaneGeometry(500, 10, 10);
             var material =  new THREE.MeshPhongMaterial({
-                            color:0x242424
+                            color:0x242424,
+                            shininess: 0
             });
             var road = new THREE.Mesh(roadGeometry, material);
             
@@ -88,7 +91,8 @@
             
             var pathGeometry = new THREE.PlaneGeometry(5, 18, 10);
             var material =  new THREE.MeshPhongMaterial({
-                            color:0x242424
+                            color:0x242424,
+                            shininess: 0
             });
             var path = new THREE.Mesh(pathGeometry, material);
             
