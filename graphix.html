@@ -9,6 +9,8 @@
 </head>
 <body>
     <script src="js/three.js"></script>
+    <script src="js/GLTFLoader.js"></script>
+    <script src="js/TextureLoader.js"></script>
     <script>
         var scene = new THREE.Scene(); 
         scene.background = new THREE.Color(0x009eb2);
@@ -24,6 +26,19 @@
             turnSpeed:Math.PI*0.02 //turning speed
         };
         
+        /** MODEL **/
+        var loader = new THREE.GLTFLoader();
+        
+        loader.load( 'models/scene.gltf', function ( gltf ) {
+            var texture = new THREE.TextureLoader().load( 'models/textures/spongebob_baseColor.png' );
+            texture.encoding = THREE.sRGBEncoding;
+            scene.add( gltf.scene );
+
+        }, undefined, function ( error ) {
+
+            console.error( error );
+
+        } );
        
         
         function init(){
