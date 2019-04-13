@@ -73,6 +73,20 @@
                 console.error( error );
 
             } );
+            
+            //PINEAPPLE
+            loader.load( 'models/Pineapple.glb', function ( gltf ) {
+                var model = gltf.scene;
+                model.scale.set(5, 5, 5);
+//
+//                model.rotation.y -= Math.PI;
+                model.position.set(0,0,20);
+                scene.add(model);
+            }, undefined, function ( error ) {
+
+                console.error( error );
+
+            } );
         }
         
         function makeLight(){
