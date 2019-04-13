@@ -39,6 +39,19 @@
             console.error( error );
 
         } );
+        
+        loader.load( 'models/Patrick.glb', function ( gltf ) {
+            var model = gltf.scene;
+            model.scale.set(.7, .7, .7);
+            
+            model.rotation.y -= Math.PI;
+            model.position.set(8,0,5);
+            scene.add( gltf.scene );
+        }, undefined, function ( error ) {
+
+            console.error( error );
+
+        } );
        
         
         function init(){
