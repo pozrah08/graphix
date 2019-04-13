@@ -26,32 +26,7 @@
             turnSpeed:Math.PI*0.02 //turning speed
         };
         
-        /** MODEL **/
-        var loader = new THREE.GLTFLoader();
         
-        loader.load( 'models/scene.gltf', function ( gltf ) {
-            var texture = new THREE.TextureLoader().load( 'models/textures/spongebob_baseColor.png' );
-            texture.encoding = THREE.sRGBEncoding;
-            scene.add( gltf.scene );
-
-        }, undefined, function ( error ) {
-
-            console.error( error );
-
-        } );
-        
-        loader.load( 'models/Patrick.glb', function ( gltf ) {
-            var model = gltf.scene;
-            model.scale.set(.7, .7, .7);
-            
-            model.rotation.y -= Math.PI;
-            model.position.set(8,0,5);
-            scene.add( gltf.scene );
-        }, undefined, function ( error ) {
-
-            console.error( error );
-
-        } );
        
         
         function init(){
@@ -59,6 +34,7 @@
             makeFloor();
             makeRoad();
             makePatrickHouse();
+            makeModels();
             camera.position.set(0, player.height, -5);
             camera.lookAt(new THREE.Vector3(0,player.height,0));
 
@@ -66,6 +42,37 @@
             document.body.appendChild(renderer.domElement);
 
             animate();
+        }
+        
+        /** MODEL **/
+        function makeModels(){
+            var loader = new THREE.GLTFLoader();
+            
+            //TEST SPONGEBOB
+//            loader.load( 'models/scene.gltf', function ( gltf ) {
+//                var texture = new THREE.TextureLoader().load( 'models/textures/spongebob_baseColor.png' );
+//                texture.encoding = THREE.sRGBEncoding;
+//                scene.add( gltf.scene );
+//
+//            }, undefined, function ( error ) {
+//
+//                console.error( error );
+//
+//            } );
+            
+            //PATRICK
+            loader.load( 'models/Patrick.glb', function ( gltf ) {
+                var model = gltf.scene;
+                model.scale.set(.7, .7, .7);
+
+                model.rotation.y -= Math.PI;
+                model.position.set(8,0,5);
+                scene.add(model);
+            }, undefined, function ( error ) {
+
+                console.error( error );
+
+            } );
         }
         
         function makeLight(){
@@ -109,7 +116,8 @@
         function makePatrickHouse(){
             var sphereGeometry = new THREE.SphereGeometry(8, 32, 32);
             var material =  new THREE.MeshPhongMaterial({
-                            color:0x4b010f
+//                            color:0x4b010f,
+                            map:THREE.ImageUtils.loadTexture('models/textures/rock_texture.jpg')
             });
             var patrickHouse = new THREE.Mesh(sphereGeometry, material);
             patrickHouse.position.x = 15;
