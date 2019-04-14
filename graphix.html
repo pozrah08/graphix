@@ -20,11 +20,13 @@
             antialias:false
         });
         
-        var player = { 
-            height:1.8, //camera y
-            speed:0.2,  //movement speed
-            turnSpeed:Math.PI*0.02 //turning speed
-        };
+        //player camera movement
+        var playerRotation = 0.1;
+        var playerSpeed = 0.1;
+        var input = {left:0,
+                     right:0,
+                     up: 0, 
+                     down: 0};
         
         var patrickMixer, spongebobMixer;
         var clock = new THREE.Clock();
@@ -35,8 +37,8 @@
             makeRoad();
             makePatrickHouse();
             makeModels();
-            camera.position.set(0, player.height, -5);
-            camera.lookAt(new THREE.Vector3(0,player.height,0));
+            camera.position.set(0, 1.8, -5);
+            camera.lookAt(new THREE.Vector3(0,1.8,0));
 
             renderer.setSize( window.innerWidth, window.innerHeight);
             document.body.appendChild(renderer.domElement);
@@ -47,18 +49,6 @@
         /** MODEL **/
         function makeModels(){
             var loader = new THREE.GLTFLoader();
-            
-            //TEST SPONGEBOB
-//            loader.load( 'models/scene.gltf', function ( gltf ) {
-//                var texture = new THREE.TextureLoader().load( 'models/textures/spongebob_baseColor.png' );
-//                texture.encoding = THREE.sRGBEncoding;
-//                scene.add( gltf.scene );
-//
-//            }, undefined, function ( error ) {
-//
-//                console.error( error );
-//
-//            } );
             
             //SPONGEBOB
             loader.load( 'models/spongebob2.glb', function ( gltf ) {
@@ -99,8 +89,6 @@
             loader.load( 'models/Pineapple.glb', function ( gltf ) {
                 var model = gltf.scene;
                 model.scale.set(5, 5, 5);
-//
-//                model.rotation.y -= Math.PI;
                 model.position.set(0,-1,20);
                 scene.add(model);
             }, undefined, function ( error ) {
@@ -151,7 +139,6 @@
         function makePatrickHouse(){
             var sphereGeometry = new THREE.SphereGeometry(8, 32, 32);
             var material =  new THREE.MeshPhongMaterial({
-//                            color:0x4b010f,
                             map:THREE.ImageUtils.loadTexture('models/textures/rock_texture.jpg')
             });
             var patrickHouse = new THREE.Mesh(sphereGeometry, material);
@@ -186,24 +173,9 @@
         function animate(){
             requestAnimationFrame(animate);
 
-            // Keyboard movement inputs
-//          if(keyboard[87] && ((camera.position.x <= 250 && camera.position.x >= -250) && (camera.position.z <= 250 && camera.position.z >= -250))){ // W with checking for collision DOES NOT WORK YET
-            if(keyboard[87]){ // W
-                camera.position.x -= Math.sin(camera.rotation.y) * player.speed;
-                camera.position.z -= -Math.cos(camera.rotation.y) * player.speed;
-            }
-            if(keyboard[83]){ // S
-                camera.position.x += Math.sin(camera.rotation.y) * player.speed;
-                camera.position.z += -Math.cos(camera.rotation.y) * player.speed;
-            }
-            if(keyboard[65]){ // A
-                camera.rotation.y -= player.turnSpeed;
-            }
-            if(keyboard[68]){ // D
-                camera.rotation.y += player.turnSpeed;
-            }
+            playerMovement();
             
-            //patrick animation
+            //animations
             var delta = clock.getDelta();
             if (patrickMixer != null && spongebobMixer != null) {
                 patrickMixer.update(delta);
@@ -212,20 +184,60 @@
             
             renderer.render(scene, camera);
         }
-
-        var keyboard = {};
         
-        function keyDown(event){
-            keyboard[event.keyCode] = true;
+        function playerMovement(){
+          if(input.left == 1){
+            camera.rotation.y -= playerRotation;
+          }
+          if(input.right == 1){
+            camera.rotation.y += playerRotation; 
+          }
+
+           if(input.up == 1){
+            camera.position.z -= -Math.cos(camera.rotation.y) * playerSpeed;
+             camera.position.x -= Math.sin(camera.rotation.y) * playerSpeed;
+          }
+          if(input.down == 1){
+            camera.position.z += -Math.cos(camera.rotation.y) * playerSpeed;
+             camera.position.x += Math.sin(camera.rotation.y) * playerSpeed;
+          }
         }
+        
+        window.addEventListener('keydown', function(e) {
+          switch (e.keyCode) {
+            case 68:
+              input.right = 1;
+              break;
+            case 65:
+              input.left = 1; 
+              break;
+            case 87:
+              input.up = 1;
+              break;
+            case 83:
+              input.down = 1;
+              break;
+          }
+        });
 
-        function keyUp(event){
-            keyboard[event.keyCode] = false;
-        }
-
-        window.addEventListener('keydown', keyDown);
-        window.addEventListener('keyup', keyUp);
-
+        window.addEventListener('keyup', function(e) {
+          switch (e.keyCode) {
+            case 68:
+              input.right = 0;
+              break;
+            case 65:
+              input.left = 0;
+              break;
+              case 87:
+              input.up = 0;
+              break;
+            case 83:
+              input.down = 0;
+              break; 
+          }
+        });
+        
+        
         init();
     </script>
 </body>
