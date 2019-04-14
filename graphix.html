@@ -26,11 +26,8 @@
             turnSpeed:Math.PI*0.02 //turning speed
         };
         
-        var mixer;
+        var patrickMixer, spongebobMixer;
         var clock = new THREE.Clock();
-        
-        
-       
         
         function init(){
             makeLight();
@@ -64,13 +61,16 @@
 //            } );
             
             //SPONGEBOB
-            loader.load( 'models/spongebob.glb', function ( gltf ) {
+            loader.load( 'models/spongebob2.glb', function ( gltf ) {
                 var model = gltf.scene;
                 model.scale.set(.45, .45, .45);
 
-                model.rotation.y -= Math.PI /2;
-                model.position.set(4 ,0.75, 6);
+                model.rotation.y -= Math.PI ;
+                model.position.set(4 ,0, 5);
                 scene.add(model);
+                
+                spongebobMixer = new THREE.AnimationMixer(model);
+                spongebobMixer.clipAction(gltf.animations[0]).play();
             }, undefined, function ( error ) {
 
                 console.error( error );
@@ -87,8 +87,8 @@
                 model.position.set(8,0,5);
                 scene.add(model);
                 
-                mixer = new THREE.AnimationMixer(model);
-                mixer.clipAction(gltf.animations[0]).play();
+                patrickMixer = new THREE.AnimationMixer(model);
+                patrickMixer.clipAction(gltf.animations[0]).play();
             }, undefined, function ( error ) {
 
                 console.error( error );
@@ -205,8 +205,9 @@
             
             //patrick animation
             var delta = clock.getDelta();
-            if (mixer != null) {
-                mixer.update(delta);
+            if (patrickMixer != null && spongebobMixer != null) {
+                patrickMixer.update(delta);
+                spongebobMixer.update(delta);
             };
             
             renderer.render(scene, camera);
