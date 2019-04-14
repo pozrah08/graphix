@@ -26,6 +26,9 @@
             turnSpeed:Math.PI*0.02 //turning speed
         };
         
+        var mixer;
+        var clock = new THREE.Clock();
+        
         
        
         
@@ -83,6 +86,9 @@
                 model.rotation.y -= Math.PI;
                 model.position.set(8,0,5);
                 scene.add(model);
+                
+                mixer = new THREE.AnimationMixer(model);
+                mixer.clipAction(gltf.animations[0]).play();
             }, undefined, function ( error ) {
 
                 console.error( error );
@@ -196,7 +202,13 @@
             if(keyboard[68]){ // D
                 camera.rotation.y += player.turnSpeed;
             }
-
+            
+            //patrick animation
+            var delta = clock.getDelta();
+            if (mixer != null) {
+                mixer.update(delta);
+            };
+            
             renderer.render(scene, camera);
         }
 
